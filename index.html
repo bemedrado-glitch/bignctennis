@@ -2850,9 +2850,10 @@ function runAllTests() {
   updatePackage('en21',12); // restore
 
   // ATTENDANCE
-  var ma1 = markAttendance('ssNEW-T','s3','c2','2026-04-10',true);
+  var _testSessId = 'ssNEW-' + Date.now(); // unique each run — prevents false 'updated' on re-run
+  var ma1 = markAttendance(_testSessId,'s3','c2','2026-04-10',true);
   _chk('markAttendance creates new record', ma1.action==='created', ma1.action);
-  var ma2 = markAttendance('ssNEW-T','s3','c2','2026-04-10',false);
+  var ma2 = markAttendance(_testSessId,'s3','c2','2026-04-10',false);
   _chk('markAttendance updates existing', ma2.action==='updated', ma2.action);
 
   // MATCHING
