@@ -5,7 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Big NC Tennis — Roster Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300..800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="data.js"></script>
+<script>
+// Supabase config — shared across app
+const SUPABASE_URL = 'https://stfjvltsxbnafyechacz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0Zmp2bHRzeGJuYWZ5ZWNoYWN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NjkwMDIsImV4cCI6MjA4OTI0NTAwMn0.PXsRIFIkPoTnBPp61p4u36a6fUzYoJQ37gr6mWYiCOY';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
 <style>
 :root{--bg:#000;--s1:#0d0d0d;--s2:#161616;--s3:#222;--s4:#2a2a2a;--b:rgba(255,255,255,.07);--bm:rgba(255,255,255,.13);--a:#C9E70A;--ah:#D8F520;--ad:rgba(201,231,10,.12);--at:#000;--t1:#fff;--t2:#888;--t3:#444;--green:#34C759;--orange:#FF9F0A;--red:#FF3B30;--blue:#0A84FF;--purple:#BF5AF2}
 *{box-sizing:border-box;margin:0;padding:0}
