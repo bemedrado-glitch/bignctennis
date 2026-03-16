@@ -4,11 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Big NC Tennis</title>
+<!-- Supabase SDK: NO async/defer — blocking ensures it loads before any JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300..800&display=swap" rel="stylesheet">
-<!-- async prevents CDN from blocking page load — THIS was the buffering bug -->
-<script async src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"
-  onload="window._sbReady=true;initSupabase()" onerror="window._sbReady=false"></script>
 <style>
 :root{--bg:#000;--s1:#0d0d0d;--s2:#161616;--s3:#222;--s4:#2a2a2a;--b:rgba(255,255,255,.07);--bm:rgba(255,255,255,.13);--a:#C9E70A;--ah:#D8F520;--ad:rgba(201,231,10,.12);--at:#000;--t1:#fff;--t2:#888;--t3:#444;--green:#34C759;--orange:#FF9F0A;--red:#FF3B30;--blue:#0A84FF;--purple:#BF5AF2}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -568,7 +567,6 @@ hr.line{border:none;border-top:1px solid var(--b);margin:18px 0}
 </div><!-- #app -->
 
 <script>
-'use strict';
 // ═══════════════════════════════════════════════
 // CONFIGURATION
 // ═══════════════════════════════════════════════
@@ -1424,14 +1422,17 @@ function initSupabase() {
         loadProfileFromDB(CU.id).then(profile => {
           if (profile) {
             CP = profile;
+            initUI();
             hideLoader();
             enterApp();
           } else {
+            initUI();
             hideLoader();
             showScreen('screen-profile-setup');
           }
-        }).catch(() => { hideLoader(); showScreen('screen-splash'); });
+        }).catch(() => { initUI(); hideLoader(); showScreen('screen-splash'); });
       } else {
+        initUI();
         hideLoader();
         showScreen('screen-splash');
       }
@@ -1439,9 +1440,21 @@ function initSupabase() {
   } catch(e) {
     console.warn('Supabase init failed, using demo mode:', e);
     DEMO_MODE = true;
+    initUI();
     hideLoader();
     showScreen('screen-splash');
   }
+}
+
+function initUI() {
+  try { renderCal(); } catch(e) {}
+  try { renderAvail('c1'); } catch(e) {}
+  try { renderDrillFilters(); } catch(e) {}
+  try { populateRosterSeasonSelect(); } catch(e) {}
+  try { updateGreeting(); } catch(e) {}
+  const td = document.getElementById('c-tdate');
+  if (td) td.textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+  updateConnBadge();
 }
 
 function hideLoader() {
@@ -1453,23 +1466,9 @@ function hideLoader() {
 // DOM READY
 // ═══════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  // Set a max timeout — if Supabase CDN hasn't loaded in 4s, go demo mode
-  setTimeout(() => {
-    if (document.getElementById('loader') && !document.getElementById('loader').classList.contains('hidden')) {
-      console.warn('Supabase CDN timeout — switching to demo mode');
-      DEMO_MODE = true;
-      hideLoader();
-      showScreen('screen-splash');
-    }
-  }, 4000);
-
-  renderCal();
-  renderAvail(CP?.id || 'c1');
-  renderDrillFilters();
-  populateRosterSeasonSelect();
-  updateGreeting();
-  document.getElementById('c-tdate').textContent =
-    new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+  // Supabase is guaranteed loaded (blocking script in head)
+  // Initialize it, then show the app
+  initSupabase();
 });
 
 function updateGreeting() {
